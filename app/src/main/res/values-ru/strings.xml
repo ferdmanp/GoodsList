@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">GoodsList</string>
+    <string name="action_settings">Настройки</string>
+    <string name="hello_blank_fragment">Пустой фрагмент</string>
+    <string name="navigation_drawer_close">Закрыть навигацию</string>
+    <string name="navigation_drawer_open">Открыть навигацию</string>
+    <string name="title_activity_goods_list_screen">Список товаров</string>
+    <string name="title_activity_groups_list">Списки</string>
+    <string name="title_new_header_dialog">Название нового списка</string>
+    <string name="btn_cancel">Отмена</string>
+</resources>
