@@ -51,12 +51,10 @@ public class ListHeadersDAL {
                 ,headerItem.TotalSum
         );
 
-        long newRowId=db.insert(GoodsListDBContract.ListItemHeaderTable.TABLE_NAME,
+        return db.insert(GoodsListDBContract.ListItemHeaderTable.TABLE_NAME,
                 null,
                 contentValues
                 );
-
-        return newRowId;
     }
 
     public void Delete(ListHeaderItem headerItem){
@@ -69,6 +67,13 @@ public class ListHeadersDAL {
         String[] selectionParams={String.valueOf(headerItemId)};
         SQLiteDatabase db=mDbHelper.getWritableDatabase();
         db.delete(GoodsListDBContract.ListItemHeaderTable.TABLE_NAME,selection,selectionParams);
+        db.close();
+    }
+
+    public void DeleteAll() {
+        SQLiteDatabase db = mDbHelper.getWritableDatabase();
+        db.delete(GoodsListDBContract.ListItemHeaderTable.TABLE_NAME, null, null);
+        db.close();
     }
 
 
@@ -120,6 +125,9 @@ public class ListHeadersDAL {
             }
             while (cursor.moveToNext());
         }
+
+        cursor.close();
+        db.close();
 
         return  result;
     }

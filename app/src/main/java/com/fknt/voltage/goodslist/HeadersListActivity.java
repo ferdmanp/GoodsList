@@ -1,5 +1,6 @@
 package com.fknt.voltage.goodslist;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.DialogFragment;
 import android.app.FragmentManager;
@@ -12,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.View;
+import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -29,6 +31,8 @@ public class HeadersListActivity extends AppCompatActivity
 
     ListHeadersDAL dal;
     String locNewListName;
+    GenericListAdapter<ListHeaderItem> adapter;
+    ListView lvHeaders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,12 +42,14 @@ public class HeadersListActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fabDeleteAll = (FloatingActionButton) findViewById(R.id.fabDeleteAll);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AlertDialog.Builder builder= new AlertDialog.Builder(HeadersListActivity.this);
                 builder.setTitle(R.string.title_new_header_dialog);
                 final EditText input= new EditText(HeadersListActivity.this);
+                input.setId(R.id.et_prompt_edit_text);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
 
@@ -51,8 +57,10 @@ public class HeadersListActivity extends AppCompatActivity
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                // EditText edit=(EditText) HeadersListActivity.this.findViewById(R.id.et_prompt_edit_text);
                                 String newHeaderName=input.getText().toString();
                                 CreateNewItem(newHeaderName);
+                                RefreshListView();
                                 dialog.dismiss();
                             }
                         });
@@ -68,13 +76,31 @@ public class HeadersListActivity extends AppCompatActivity
             }
         });
 
-        ListView lvHeaders=(ListView) findViewById(R.id.lvHeaders);
+
+        fabDeleteAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DeleteAllItems();
+                RefreshListView();
+
+            }
+        });
+
+
+        lvHeaders = (ListView) findViewById(R.id.lvHeaders);
         dal=new ListHeadersDAL(HeadersListActivity.this);
 
-        GenericListAdapter<ListHeaderItem> adapter=
+        adapter =
                 new GenericListAdapter<>(HeadersListActivity.this,dal.SelectAll() );
 
+
         lvHeaders.setAdapter(adapter);
+    }
+
+    private void DeleteAllItems() {
+        if (dal == null)
+            dal = new ListHeadersDAL(HeadersListActivity.this);
+        dal.DeleteAll();
     }
 
     private void CreateNewItem(String newHeaderName) {
@@ -86,7 +112,6 @@ public class HeadersListActivity extends AppCompatActivity
             dal= new ListHeadersDAL(HeadersListActivity.this);
         try{
             dal.Insert(item);
-
         }
         catch (Exception e)
         {
@@ -96,6 +121,13 @@ public class HeadersListActivity extends AppCompatActivity
         }
 
 
+    }
+
+    private void RefreshListView() {
+        if (dal == null)
+            dal = new ListHeadersDAL(HeadersListActivity.this);
+        adapter.updateList(dal.SelectAll());
+        lvHeaders.refreshDrawableState();
     }
 
 }
