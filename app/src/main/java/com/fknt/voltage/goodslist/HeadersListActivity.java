@@ -1,11 +1,9 @@
 package com.fknt.voltage.goodslist;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.DialogFragment;
-import android.app.FragmentManager;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -13,17 +11,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.view.View;
-import android.widget.BaseAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import com.fknt.voltage.goodslist.Adapters.GenericListAdapter;
 import com.fknt.voltage.goodslist.Classes.ListHeaderItem;
 import com.fknt.voltage.goodslist.DAL.ListHeadersDAL;
-import com.fknt.voltage.goodslist.Dialogs.DialogPrompt;
 
-import java.util.ArrayList;
 import java.util.Date;
 
 public class HeadersListActivity extends AppCompatActivity
@@ -33,6 +27,7 @@ public class HeadersListActivity extends AppCompatActivity
     String locNewListName;
     GenericListAdapter<ListHeaderItem> adapter;
     ListView lvHeaders;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,9 +41,9 @@ public class HeadersListActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AlertDialog.Builder builder= new AlertDialog.Builder(HeadersListActivity.this);
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(R.string.title_new_header_dialog);
-                final EditText input= new EditText(HeadersListActivity.this);
+                final EditText input = new EditText(getContext());
                 input.setId(R.id.et_prompt_edit_text);
                 input.setInputType(InputType.TYPE_CLASS_TEXT);
                 builder.setView(input);
@@ -59,9 +54,10 @@ public class HeadersListActivity extends AppCompatActivity
                             public void onClick(DialogInterface dialog, int which) {
                                 // EditText edit=(EditText) HeadersListActivity.this.findViewById(R.id.et_prompt_edit_text);
                                 String newHeaderName=input.getText().toString();
+                                dialog.dismiss();
                                 CreateNewItem(newHeaderName);
                                 RefreshListView();
-                                dialog.dismiss();
+
                             }
                         });
 
@@ -88,18 +84,33 @@ public class HeadersListActivity extends AppCompatActivity
 
 
         lvHeaders = (ListView) findViewById(R.id.lvHeaders);
-        dal=new ListHeadersDAL(HeadersListActivity.this);
+        dal = new ListHeadersDAL(getContext());
 
         adapter =
-                new GenericListAdapter<>(HeadersListActivity.this,dal.SelectAll() );
+                new GenericListAdapter<>(getContext(), dal.SelectAll());
 
 
         lvHeaders.setAdapter(adapter);
     }
 
+    @NonNull
+    private HeadersListActivity getContext() {
+        return HeadersListActivity.this;
+    }
+
+    @Override
+    protected void onResume() {
+
+        if (dal == null)
+            dal = new ListHeadersDAL(getContext());
+
+        adapter.updateList(dal.SelectAll());
+        super.onResume();
+    }
+
     private void DeleteAllItems() {
         if (dal == null)
-            dal = new ListHeadersDAL(HeadersListActivity.this);
+            dal = new ListHeadersDAL(getContext());
         dal.DeleteAll();
     }
 
@@ -109,14 +120,14 @@ public class HeadersListActivity extends AppCompatActivity
         item.DateCreate= new Date();
         item.TotalSum=0.0;
         if(dal==null)
-            dal= new ListHeadersDAL(HeadersListActivity.this);
+            dal = new ListHeadersDAL(getContext());
         try{
             dal.Insert(item);
         }
         catch (Exception e)
         {
             Snackbar
-                    .make(new CoordinatorLayout(HeadersListActivity.this),e.getMessage(),Snackbar.LENGTH_LONG)
+                    .make(new CoordinatorLayout(getContext()), e.getMessage(), Snackbar.LENGTH_LONG)
                     .show();
         }
 
@@ -125,9 +136,10 @@ public class HeadersListActivity extends AppCompatActivity
 
     private void RefreshListView() {
         if (dal == null)
-            dal = new ListHeadersDAL(HeadersListActivity.this);
+            dal = new ListHeadersDAL(getContext());
         adapter.updateList(dal.SelectAll());
-        lvHeaders.refreshDrawableState();
+        lvHeaders.invalidate();
     }
+
 
 }

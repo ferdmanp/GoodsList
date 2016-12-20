@@ -7,6 +7,7 @@ import android.widget.BaseAdapter;
 
 import com.fknt.voltage.goodslist.Classes.ListItemBase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -46,7 +47,10 @@ public class GenericListAdapter<T extends ListItemBase> extends BaseAdapter {
 
     public void updateList(List<T> newData) {
         items.clear();
-        items.addAll(newData);
+        items = new ArrayList<>(newData);
+        //
+        // items.addAll(newData);
+        //items=newData;
         this.notifyDataSetChanged();
     }
 }

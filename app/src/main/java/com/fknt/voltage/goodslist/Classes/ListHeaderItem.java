@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.fknt.voltage.goodslist.R;
 
 import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -34,7 +33,7 @@ public class ListHeaderItem extends ListItemBase {
 
 
             //DateFormat dateFormat= SimpleDateFormat()
-            tvName.setText(this.Name);
+            tvName.setText(this.Name + "(" + this.Id + ")");
             //tvDate.setText(this.DateCreate.toString());
             //TODO: Replace with date from DB
             tvDate.setText(DateFormat.getDateInstance().format(new Date()));
